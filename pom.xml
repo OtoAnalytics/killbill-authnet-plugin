@@ -2,25 +2,322 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+<!--
+   Copyright 2016 Womply
 
-    <parent>
-        <artifactId>plugin-parent</artifactId>
-        <groupId>com.womply.killbill.resources</groupId>
-        <version>1.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
 
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+
+    <groupId>com.womply.killbill.plugins</groupId>
     <artifactId>authorize-net-plugin</artifactId>
     <packaging>bundle</packaging>
+    <version>1.0-SNAPSHOT</version>
 
     <name>KillBill Plugin for Authorize.net</name>
 
     <properties>
+        <docker.host>none</docker.host>
+        <build.sourceEncoding>UTF-8</build.sourceEncoding>
+        <build.jvmsize>1024</build.jvmsize>
+        <build.target-jdk>1.8</build.target-jdk>
+        <javadoc.lint>none</javadoc.lint>
         <bundle.activator.class>com.womply.billing.killbill.plugins.AuthorizeNetActivator</bundle.activator.class>
         <shade-jar-execution-id>assemble-killbill-osgi-bundles-authorize-net-gateway-java-plugin</shade-jar-execution-id>
+        <!-- properties from kb oss parent pom -->
+        <killbill.version>0.16.8</killbill.version>
+        <killbill-base-plugin.version>0.3.3</killbill-base-plugin.version>
+        <killbill-platform.version>0.26.1</killbill-platform.version>
+        <killbill-plugin-api.version>0.18</killbill-plugin-api.version>
+        <killbill-api.version>0.33.1</killbill-api.version>
+        <osgi.version>5.0.0</osgi.version>
+        <version.checkstyle>2.16</version.checkstyle>
+        <version.docker.plugin>0.13.4</version.docker.plugin>
+        <version.findbugs.plugin>3.0.3</version.findbugs.plugin>
+        <version.flyway>3.2.1</version.flyway>
+        <version.jooq>3.6.2</version.jooq>
+        <version.jackson>2.6.1</version.jackson>
+        <version.lombok>1.16.4</version.lombok>
+        <version.mysql-driver>5.1.36</version.mysql-driver>
+        <version.pmd>3.6</version.pmd>
+        <version.slf4j>1.7.21</version.slf4j>
+        <version.testng>6.9.4</version.testng>
+        <version.dbcp2>2.1.1</version.dbcp2>
+        <test.timezone>UTC</test.timezone>
+        <test.fork-count>1</test.fork-count>
+        <test.reuse-forks>true</test.reuse-forks>
+        <test.parallel>classes</test.parallel>
+        <test.jvmsize>2G</test.jvmsize>
+        <test.thread-count>10</test.thread-count>
+        
+        <check.skip-dependency>false</check.skip-dependency>
+        <check.fail-dependency>true</check.fail-dependency>
+        <check.skip-enforcer>false</check.skip-enforcer>
+        <check.fail-enforcer>true</check.fail-enforcer>
+        <check.skip-checkstyle>false</check.skip-checkstyle>
+        <check.fail-checkstyle>true</check.fail-checkstyle>
+        <check.skip-findbugs>false</check.skip-findbugs>
+        <check.fail-findbugs>true</check.fail-findbugs>
+        <check.skip-pmd>false</check.skip-pmd>
+        <check.fail-pmd>true</check.fail-pmd>
+
+        <internal.mysql.port>3306</internal.mysql.port>
+        <exposed.mysql.port>33066</exposed.mysql.port>
+
+        <!--docker settings-->
+        <service.log.regex>Server: Started</service.log.regex>
+        <mysql.wait.time>120000</mysql.wait.time>
+        <mysql.log.regex>.*port: 3306  MySQL Community Server.*</mysql.log.regex>
+
+        <db.url>jdbc:mysql://${docker.host.ip}:${exposed.mysql.port}/${db.database}</db.url>
+        <db.database>killbill</db.database>
+        <db.flyway.username>root</db.flyway.username>
+        <db.flyway.password>honeybadger</db.flyway.password>
+
+        <!--Docker config-->
+        <docker.logs.enabled>true</docker.logs.enabled>
+
     </properties>
 
+    <scm>
+        <developerConnection>scm:git:.</developerConnection>
+    </scm>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <dependency>
+                <groupId>joda-time</groupId>
+                <artifactId>joda-time</artifactId>
+                <version>2.3</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.kill-bill.billing</groupId>
+                <artifactId>killbill-api</artifactId>
+                <version>${killbill-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.kill-bill.billing.plugin</groupId>
+                <artifactId>killbill-plugin-api-payment</artifactId>
+                <version>${killbill-plugin-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.kill-bill.billing.plugin</groupId>
+                <artifactId>killbill-plugin-api-notification</artifactId>
+                <version>${killbill-plugin-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.kill-bill.billing</groupId>
+                <artifactId>killbill-platform-osgi-api</artifactId>
+                <version>${killbill-platform.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.kill-bill.billing</groupId>
+                <artifactId>killbill-platform-osgi-bundles-lib-killbill</artifactId>
+                <version>${killbill-platform.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.code.findbugs</groupId>
+                        <artifactId>jsr305</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.kill-bill.billing.plugin.java</groupId>
+                <artifactId>killbill-base-plugin</artifactId>
+                <version>${killbill-base-plugin.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.code.findbugs</groupId>
+                        <artifactId>jsr305</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>${osgi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.compendium</artifactId>
+                <version>${osgi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.framework</artifactId>
+                <version>4.4.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.kill-bill.billing</groupId>
+                <artifactId>killbill-util</artifactId>
+                <version>${killbill.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.kill-bill.billing</groupId>
+                <artifactId>killbill-internal-api</artifactId>
+                <version>${killbill.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.xml.parsers</groupId>
+                <artifactId>jaxp-api</artifactId>
+                <version>1.4.5</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>3.1.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq</artifactId>
+                <version>${version.jooq}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.authorize</groupId>
+                <artifactId>anet-java-sdk</artifactId>
+                <version>1.8.8</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>log4j</groupId>
+                        <artifactId>log4j</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.4</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${version.lombok}</version>
+                <scope>provided</scope>
+            </dependency>
+
+
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>1.1.0.Final</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>3.4.1</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.easymock</groupId>
+                <artifactId>easymock</artifactId>
+                <version>3.4</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-dbcp2</artifactId>
+                <version>${version.dbcp2}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jdk8</artifactId>
+                <version>${version.jackson}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-guava</artifactId>
+                <version>${version.jackson}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>${version.jackson}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${version.jackson}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${version.jackson}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${version.jackson}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${version.mysql-driver}</version>
+                <scope>runtime</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>${version.testng}</version>
+                <scope>test</scope>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
+
+
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.kill-bill.billing</groupId>
@@ -44,11 +341,6 @@
             <groupId>org.kill-bill.billing</groupId>
             <artifactId>killbill-platform-osgi-api</artifactId>
         </dependency>
-
-        <!--<dependency>-->
-            <!--<groupId>org.kill-bill.billing</groupId>-->
-            <!--<artifactId>killbill-internal-api</artifactId>-->
-        <!--</dependency>-->
 
         <dependency>
             <groupId>org.kill-bill.billing</groupId>
@@ -84,7 +376,14 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>osgi-over-slf4j</artifactId>
-            <version>1.7.12</version>
+            <version>${version.slf4j}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${version.slf4j}</version>
             <scope>runtime</scope>
         </dependency>
 
@@ -94,23 +393,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.womply.killbill.resources</groupId>
-            <artifactId>model</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.womply</groupId>
-            <artifactId>common-java-service</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.womply</groupId>
-            <artifactId>common-java-core</artifactId>
         </dependency>
 
         <dependency>
@@ -121,6 +405,11 @@
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
         </dependency>
 
         <dependency>
@@ -153,9 +442,738 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jdk8</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-guava</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
+        <pluginManagement>
+            <plugins>
+
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.1</version>
+                    <configuration>
+                        <source>${build.target-jdk}</source>
+                        <target>${build.target-jdk}</target>
+                        <encoding>${build.sourceEncoding}</encoding>
+                        <maxmem>${build.jvmsize}</maxmem>
+                        <showWarnings>true</showWarnings>
+                        <fork>true</fork>
+                    </configuration>
+                </plugin>
+
+                <!-- Resource plugins should always use UTF-8 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>2.6</version>
+                    <configuration>
+                        <encoding>${build.sourceEncoding}</encoding>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.4</version>
+                    <configuration>
+                        <!-- must be true for jar-with-dependencies builds -->
+                        <appendAssemblyId>true</appendAssemblyId>
+                        <!-- Always use GNU tar mode. -->
+                        <tarLongFileMode>gnu</tarLongFileMode>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${version.checkstyle}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.puppycrawl.tools</groupId>
+                            <artifactId>checkstyle</artifactId>
+                            <version>6.9</version>
+                        </dependency>
+                    </dependencies>
+                    <configuration>
+                        <configLocation>${basedir}/build-resources/checkstyle_config.xml</configLocation>
+                        <encoding>${build.sourceEncoding}</encoding>
+                        <consoleOutput>true</consoleOutput>
+                        <linkXRef>false</linkXRef>
+                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                        <skip>${check.skip-checkstyle}</skip>
+                        <failsOnError>${check.fail-checkstyle}</failsOnError>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>validate-checkstyle</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>findbugs-maven-plugin</artifactId>
+                    <version>${version.findbugs.plugin}</version>
+                    <configuration>
+                        <effort>Max</effort>
+                        <skip>${check.skip-findbugs}</skip>
+                        <failOnError>${check.fail-findbugs}</failOnError>
+                        <excludeFilterFile>${basedir}/build-resources/findbugs_excluded_filters.xml</excludeFilterFile>
+                        <xmlOutput>true</xmlOutput>
+                        <includeTests>true</includeTests>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>validate-findbugs</id>
+                            <phase>test-compile</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-pmd-plugin</artifactId>
+                    <version>${version.pmd}</version>
+                    <configuration>
+                        <skip>${check.skip-pmd}</skip>
+                        <failOnViolation>${check.fail-pmd}</failOnViolation>
+                        <sourceEncoding>${build.sourceEncoding}</sourceEncoding>
+                        <linkXRef>false</linkXRef>
+                        <verbose>true</verbose>
+                        <rulesets>
+                            <ruleset>${basedir}/build-resources/pmd_rulesets.xml</ruleset>
+                        </rulesets>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>validate-pmd</id>
+                            <phase>test-compile</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.4</version>
+                    <executions>
+                        <execution>
+                            <id>attach-tests</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>test-jar</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <goals>
+                                <goal>jar</goal>
+                                <goal>test-jar</goal>
+                            </goals>
+                            <configuration>
+                                <archive>
+                                    <!-- use the manifest file created by the bundle plugin -->
+                                    <!--<useDefaultManifestFile>true</useDefaultManifestFile>-->
+                                    <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                                    <!-- bundle plugin already generated the maven descriptor -->
+                                    <addMavenDescriptor>false</addMavenDescriptor>
+                                </archive>
+                            </configuration>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <!-- do not build an empty jar if the project is
+                             e.g. a pom project -->
+                        <skipIfEmpty>true</skipIfEmpty>
+                        <archive>
+                            <manifest>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                                <addClasspath>false</addClasspath>
+                            </manifest>
+                            <manifestEntries>
+                                <!-- This is actually the time when the build was done -->
+                                <Build-Time>${git.build.time}</Build-Time>
+                                <Git-Commit-Id>${git.commit.id}</Git-Commit-Id>
+                                <Git-Commit-Time>${git.commit.time}</Git-Commit-Time>
+                                <Implementation-Version>${git.commit.id.describe}</Implementation-Version>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>1.2</version>
+                    <executions>
+                        <execution>
+                            <id>default</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <skip>${check.skip-enforcer}</skip>
+                        <fail>${check.fail-enforcer}</fail>
+                        <failFast>false</failFast>
+                        <rules>
+                            <!-- The following dependencies are hazardous for builds. -->
+                            <bannedDependencies>
+                                <excludes>
+                                    <!-- use guice instead of hk2 javax.injection -->
+                                    <exclude>org.glassfish.hk2.external:*</exclude>
+                                    <!-- clashes with commons-logging:commons-logging -->
+                                    <exclude>commons-logging:commons-logging-api</exclude>
+                                    <!-- logging implemenations clash with slf4j impls -->
+                                    <exclude>org.apache.logging.log4j:log4j-core</exclude>
+                                    <exclude>commons-logging:commons-logging</exclude>
+                                    <exclude>org.slf4j:slf4j-log4j12</exclude>
+                                    <exclude>log4j:log4j</exclude>
+                                    <!-- clashes with cglib:cglib-nodep -->
+                                    <exclude>cglib:cglib</exclude>
+                                    <!-- old versions of junit repackage hamcrest -->
+                                    <exclude>junit:junit</exclude>
+                                    <!-- use guava -->
+                                    <exclude>com.google.collections:google-collections</exclude>
+                                    <!-- but not the badly numbered ones... -->
+                                    <exclude>com.google.guava:guava</exclude>
+                                    <!-- Clashes with com.google.code.findbugs:annotations and having both jars -->
+                                    <!-- as a dependency then clashes with the dependency checker (because it   -->
+                                    <!-- is not very good at handling annotations). Use the annotations jar     -->
+                                    <!-- instead which has all jsr305 annotations and the additional findbugs   -->
+                                    <!-- stuff. -->
+                                    <exclude>com.google.code.findbugs:jsr305</exclude>
+                                    <exclude>net.jcip:jcip-annotations</exclude>
+                                    <!-- Use the official version at javax.servlet:javax.servlet-api -->
+                                    <exclude>org.eclipse.jetty.orbit:javax.servlet</exclude>
+                                    <!-- breaks dropwizard's bootstrap's ObjectMapper setting -->
+                                    <exclude>org.glassfish.jersey.media:jersey-media-json-jackson</exclude>
+                                    <!-- overlaps with javax.ws.rs:javax.ws.rs-api -->
+                                    <exclude>javax.ws.rs:jsr311-api</exclude>
+                                </excludes>
+                                <includes>
+                                    <!-- whitelist the well numbered guava releases -->
+                                    <include>com.google.guava:guava:[10.0.1,)</include>
+                                    <!-- newer versions of junit do not repackage hamcrest -->
+                                    <include>junit:junit:[4.11,)</include>
+                                </includes>
+                            </bannedDependencies>
+                            <requireMavenVersion>
+                                <!-- This should be higher, but CircleCI is old-->
+                                <version>3.2.5</version>
+                            </requireMavenVersion>
+                            <requireJavaVersion>
+                                <version>${build.target-jdk}</version>
+                            </requireJavaVersion>
+                        </rules>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>2.5.0</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <instructions>
+                            <!-- Property bundle.activator.class is defined in individual plugins -->
+                            <Bundle-Activator>${bundle.activator.class}</Bundle-Activator>
+                            <Export-Package/>
+                            <Private-Package>com.womply.billing.killbill.plugins.*</Private-Package>
+                            <!-- Optional resolution because exported by the Felix system bundle -->
+                            <Import-Package>
+                                org.xml.sax;
+                                org.xml.sax.ext;
+                                org.xml.sax.helpers;
+                                com.sun.org.apache.xerces.internal.jaxp;
+                                com.sun.org.apache.xerces.internal.xs;
+                                com.sun.org.apache.xerces.internal.xni;
+                                com.sun.org.apache.xerces.internal.xni.parser;
+                                com.sun.org.apache.xerces.internal.utils;
+                                com.sun.org.apache.xerces.internal.util;
+                                com.sun.org.apache.xerces.internal.impl;
+                                com.sun.org.apache.xerces.internal.impl.dtd;
+                                com.sun.org.apache.xerces.internal.impl.dv;
+                                com.sun.org.apache.xerces.internal.impl.dv.dtd;
+                                com.sun.org.apache.xerces.internal.impl.msg;
+                                com.sun.org.apache.xerces.internal.impl.validation;
+                                com.sun.org.apache.xerces.internal.parsers;
+                                com.sun.xml.internal.bind;
+                                com.sun.xml.internal.bind.v2.util;
+                                com.sun.xml.internal.bind.v2.runtime.unmarshaller;
+                                com.sun.xml.internal.stream;
+                                org.w3c.dom;
+                                org.w3c.dom.ls;
+                                javax.crypto;
+                                javax.crypto.interfaces;
+                                javax.crypto.spec;
+                                javax.net;
+                                javax.net.ssl;
+                                javax.management;
+                                javax.jws;
+                                javax.jws.soap;
+                                javax.annotation;
+                                javax.activation;
+                                javax.xml.soap;
+                                javax.xml.ws;
+                                javax.xml.ws.spi;
+                                javax.xml.ws.handler.soap;
+                                javax.xml.ws.handler;
+                                javax.xml.ws.http;
+                                javax.xml.ws.soap;
+                                javax.xml.ws.wsaddressing;
+                                javax.xml.stream;
+                                javax.xml.stream.events;
+                                javax.xml.stream.util;
+                                javax.xml.bind.annotation.adapters;
+                                javax.xml.bind;
+                                javax.xml.bind.helpers;
+                                javax.xml.bind.annotation;
+                                javax.xml.bind.attachment;
+                                javax.xml.datatype;
+                                javax.xml.namespace;
+                                javax.xml.parsers;
+                                javax.xml.transform;
+                                javax.xml.transform.sax;
+                                javax.xml.transform.dom;
+                                javax.xml.transform.stream;
+                                javax.xml.xpath;
+                                javax.security.auth;
+                                javax.security.auth.x500;
+                                javax.naming.directory;
+                                javax.naming.event;
+                                javax.naming.ldap;
+                                javax.naming.spi;
+                                javax.naming;
+                                *;resolution:=optional
+                            </Import-Package>
+                        </instructions>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>process-classes</phase>
+                            <goals>
+                                <goal>manifest</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.18.1</version>
+                    <configuration>
+                        <encoding>${build.sourceEncoding}</encoding>
+                        <argLine>
+                            ${jacocoArgLineIT}
+                        </argLine>
+                        <systemPropertyVariables>
+                            <docker.host.ip>${docker.host.ip}</docker.host.ip>
+                            <db.url>${db.url}</db.url>
+                            <db.username>${db.flyway.username}</db.username>
+                            <db.password>${db.flyway.password}</db.password>
+                            <db.drivername>com.mysql.jdbc.Driver</db.drivername>
+                        </systemPropertyVariables>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>integration-test</id>
+                            <phase>integration-test</phase>
+                            <goals>
+                                <goal>integration-test</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>verify</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>verify</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>2.10</version>
+                    <configuration>
+                        <failOnWarning>${check.fail-dependency}</failOnWarning>
+                        <ignoreNonCompile>true</ignoreNonCompile>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>set-properties</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>properties</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>default</id>
+                            <phase>process-test-classes</phase>
+                            <configuration>
+                                <skip>${check.skip-dependency}</skip>
+                            </configuration>
+                            <goals>
+                                <goal>analyze-only</goal>
+                                <goal>analyze-duplicate</goal>
+                                <goal>analyze-dep-mgt</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>copy</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>copy-dependencies</goal>
+                            </goals>
+                            <configuration>
+                                <outputDirectory>${project.build.directory}</outputDirectory>
+                                <includeArtifactIds>bcprov-jdk15on</includeArtifactIds>
+                                <stripVersion>true</stripVersion>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.18.1</version>
+                    <configuration>
+                        <systemPropertyVariables>
+                            <sun.jnu.encoding>${build.sourceEncoding}</sun.jnu.encoding>
+                            <java.awt.headless>true</java.awt.headless>
+                            <java.util.logging.SimpleFormatter.format>%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS %4$s
+                                %5$s%6$s%n
+                            </java.util.logging.SimpleFormatter.format>
+                        </systemPropertyVariables>
+                        <forkCount>${test.fork-count}</forkCount>
+                        <reuseForks>${test.reuse-forks}</reuseForks>
+                        <runOrder>random</runOrder>
+                        <parallel>${test.parallel}</parallel>
+                        <threadCount>${test.thread-count}</threadCount>
+                        <argLine>
+                            ${jacocoArgLineUT}
+                            -Duser.timezone=${test.timezone}
+                            -Dfile.encoding=${build.sourceEncoding}
+                            -Xmx${test.jvmsize}
+                            -Xms${test.jvmsize}
+                            -XX:OnOutOfMemoryError="kill -9 %p"
+                            -XX:+HeapDumpOnOutOfMemoryError
+                        </argLine>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.7.5.201505241946</version>
+                    <executions>
+                        <execution>
+                            <id>prepare-unit</id>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                            <configuration>
+                                <propertyName>jacocoArgLineUT</propertyName>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>report-unit</id>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>prepare-integration</id>
+                            <goals>
+                                <goal>prepare-agent-integration</goal>
+                            </goals>
+                            <configuration>
+                                <propertyName>jacocoArgLineIT</propertyName>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>report-integration</id>
+                            <goals>
+                                <goal>report-integration</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.9</version>
+                    <configuration>
+                        <quiet>true</quiet>
+                        <source>${build.target-jdk}</source>
+                        <encoding>${build.sourceEncoding}</encoding>
+                        <maxmemory>${build.jvmsize}</maxmemory>
+                        <additionalparam>-Xdoclint:${javadoc.lint}</additionalparam>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>2.4.1</version>
+                    <executions>
+                        <execution>
+                            <!-- Property shade-jar-execution-id is defined in individual plugins -->
+                            <id>${shade-jar-execution-id}</id>
+                            <goals>
+                                <goal>shade</goal>
+                            </goals>
+                            <phase>package</phase>
+                            <configuration>
+                                <createSourcesJar>true</createSourcesJar>
+                                <shadedArtifactAttached>false</shadedArtifactAttached>
+                                <shadedClassifierName>jar-with-dependencies</shadedClassifierName>
+                                <filters>
+                                    <filter>
+                                        <artifact>${project.groupId}:${project.artifactId}</artifact>
+                                    </filter>
+                                </filters>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.jolokia</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>${version.docker.plugin}</version>
+                    <configuration>
+                        <skip>${skipITs}</skip>
+
+                        <images>
+                            <image>
+                                <name>mysql:5.6.27</name>
+                                <alias>killbill_mysql</alias>
+                                <run>
+                                    <wait>
+                                        <time>${mysql.wait.time}</time>
+                                        <log>${mysql.log.regex}</log>
+                                    </wait>
+                                    <env>
+                                        <MYSQL_ROOT_PASSWORD>${db.flyway.password}</MYSQL_ROOT_PASSWORD>
+                                        <MYSQL_DATABASE>${db.database}</MYSQL_DATABASE>
+                                    </env>
+                                    <ports>
+                                        <port>${exposed.mysql.port}:${internal.mysql.port}</port>
+                                    </ports>
+                                    <log>
+                                        <enabled>${docker.logs.enabled}</enabled>
+                                        <prefix>MS</prefix>
+                                    </log>
+                                </run>
+                            </image>
+                        </images>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>build-images</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>build</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>start</id>
+                            <phase>pre-integration-test</phase>
+                            <goals>
+                                <goal>start</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>stop</id>
+                            <phase>post-integration-test</phase>
+                            <goals>
+                                <goal>stop</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>push-to-quay</id>
+                            <phase>deploy</phase>
+                            <goals>
+                                <goal>push</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>1.9.1</version>
+                    <executions>
+                        <execution>
+                            <id>generate-sources</id>
+                            <phase>generate-sources</phase>
+                            <goals><goal>add-source</goal></goals>
+                            <configuration>
+                                <sources>
+                                    <source>src/generated/java</source>
+                                </sources>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>regex-property</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>regex-properties</goal>
+                            </goals>
+                            <configuration>
+                                <regexPropertySettings>
+                                    <regexPropertySetting>
+                                        <name>docker.host.validated</name>
+                                        <value>${docker.host}</value>
+                                        <regex>^tcp</regex>
+                                        <replacement>https</replacement>
+                                        <failIfNoMatch>false</failIfNoMatch>
+                                    </regexPropertySetting>
+                                    <regexPropertySetting>
+                                        <name>docker.host.ip</name>
+                                        <value>${docker.host}</value>
+                                        <regex>^tcp://([0-9.]+):[0-9]+$</regex>
+                                        <replacement>$1</replacement>
+                                        <failIfNoMatch>false</failIfNoMatch>
+                                    </regexPropertySetting>
+                                </regexPropertySettings>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+
+                <plugin>
+                    <groupId>pl.project13.maven</groupId>
+                    <artifactId>git-commit-id-plugin</artifactId>
+                    <version>2.1.15</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>revision</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <dateFormat>yyyy-MM-dd'T'HH:mm:ssZZ</dateFormat>
+                        <dateFormatTimeZone>UTC</dateFormatTimeZone>
+                        <failOnNoGitDirectory>false</failOnNoGitDirectory>
+                        <failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.flywaydb</groupId>
+                    <artifactId>flyway-maven-plugin</artifactId>
+                    <version>${version.flyway}</version>
+
+                    <!-- needs to run after the integration test docker deps are started -->
+                    <executions>
+                        <execution>
+                            <phase>pre-integration-test</phase>
+                            <goals>
+                                <goal>migrate</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+
+                    <!-- Note that we need to prefix the db/migration
+                         path with filesystem: to prevent Flyway
+                         from looking for our migration scripts
+                         only on the classpath -->
+                    <configuration>
+                        <skip>${skipITs}</skip>
+                        <driver>com.mysql.jdbc.Driver</driver>
+                        <url>${db.url}</url>
+                        <user>${db.flyway.username}</user>
+                        <password>${db.flyway.password}</password>
+                        <schemas>
+                            <schema>killbill</schema>
+                        </schemas>
+                        <locations>
+                            <location>db/migration</location>
+                        </locations>
+                        <outOfOrder>true</outOfOrder>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.2.1</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                                <goal>test-jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
         <plugins>
 
             <plugin>
@@ -179,6 +1197,7 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
             </plugin>
 
@@ -192,7 +1211,130 @@
                 <artifactId>flyway-maven-plugin</artifactId>
             </plugin>
 
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
+
         </plugins>
     </build>
+
+    <reporting>
+        <plugins>
+
+            <!-- checkstyle plugin report -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>checkstyle</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+
+        </plugins>
+    </reporting>
+
+    <profiles>
+        <profile>
+            <id>dockerHostOverride</id>
+            <activation>
+                <property>
+                    <name>env.DOCKER_HOST</name>
+                </property>
+            </activation>
+            <properties>
+                <docker.host>${env.DOCKER_HOST}</docker.host>
+            </properties>
+        </profile>
+        <profile>
+            <id>linux</id>
+            <activation>
+                <os>
+                    <name>linux</name>
+                </os>
+            </activation>
+            <properties>
+                <docker.keepContainer>true</docker.keepContainer>
+                <docker.host.validated>unix:///var/run/docker.sock</docker.host.validated>
+                <docker.host.ip>127.0.0.1</docker.host.ip>
+            </properties>
+        </profile>
+        <profile>
+            <id>mac</id>
+            <activation>
+                <os>
+                    <name>mac os x</name>
+                </os>
+            </activation>
+            <properties>
+                <docker.keepContainer>false</docker.keepContainer>
+            </properties>
+        </profile>
+        <profile>
+            <id>skip-checks</id>
+            <properties>
+                <check.skip-checkstyle>true</check.skip-checkstyle>
+                <check.skip-findbugs>true</check.skip-findbugs>
+                <check.skip-pmd>true</check.skip-pmd>
+                <check.skip-dependency>true</check.skip-dependency>
+            </properties>
+        </profile>
+    </profiles>
+    <distributionManagement>
+        <repository>
+            <id>${env.MVN_RELEASE_REPO_NAME}</id>
+            <url>${env.MVN_RELEASE_REPO_URL}</url>
+        </repository>
+        <snapshotRepository>
+            <id>${env.MVN_SNAPSHOT_REPO_NAME}</id>
+            <url>${env.MVN_SNAPSHOT_REPO_URL}</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+
 
 </project>

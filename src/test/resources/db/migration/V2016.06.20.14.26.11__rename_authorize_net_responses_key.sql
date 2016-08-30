@@ -1,0 +1,2 @@
+ALTER TABLE authorize_net_transactions DROP KEY index_authorize_net_responses_kb_account_id_kb_payment_id,
+ADD KEY index_authorize_net_transactions_kb_account_id_kb_payment_id (kb_account_id, kb_payment_id);

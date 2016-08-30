@@ -1,0 +1,1 @@
+update roles_permissions set is_active=0 where role_name = 'customer_success';

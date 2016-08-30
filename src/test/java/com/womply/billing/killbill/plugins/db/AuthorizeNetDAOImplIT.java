@@ -1,3 +1,19 @@
+/*
+ *  Copyright 2016 Womply
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
 package com.womply.billing.killbill.plugins.db;
 
 import static com.womply.billing.killbill.plugins.jooq.tables.AuthorizeNetPaymentMethods.AUTHORIZE_NET_PAYMENT_METHODS;
@@ -51,6 +67,7 @@ public class AuthorizeNetDAOImplIT {
     private static final String dbUser = System.getProperty("db.username");
     private static final String dbPassword = System.getProperty("db.password");
     private static final String dbUrl = System.getProperty("db.url");
+    private static final String dbDriver = System.getProperty("db.drivername");
 
     private AuthorizeNetDAOImpl dao;
     private AuthorizeNetTestDAO testDao;
@@ -64,6 +81,7 @@ public class AuthorizeNetDAOImplIT {
         ds.setUrl(dbUrl);
         ds.setUsername(dbUser);
         ds.setPassword(dbPassword);
+        ds.setDriverClassName(dbDriver);
 
         dao = new AuthorizeNetDAOImpl(ds);
         testDao = new AuthorizeNetTestDAO(ds);
