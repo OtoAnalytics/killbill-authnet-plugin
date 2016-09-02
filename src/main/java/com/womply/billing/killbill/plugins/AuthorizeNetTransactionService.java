@@ -52,6 +52,7 @@ public class AuthorizeNetTransactionService {
         txnRequest.setTransactionType(transaction.getTransactionType().value());
         txnRequest.setProfile(customerPaymentProfile);
         txnRequest.setAmount(transaction.getAmount());
+        txnRequest.setPoNumber(transaction.getKbTransactionId().toString());
 
         if (transaction.doesReferenceTransaction()) {
             txnRequest.setRefTransId(transaction.getAuthorizeNetReferencedTransactionId());

@@ -123,6 +123,7 @@ public class AuthorizeNetTransactionServiceTest {
         assertThat(transactionRequest).isNotNull();
         assertThat(transactionRequest.getAmount()).isEqualTo(expectedAmount);
         assertThat(transactionRequest.getTransactionType()).isEqualTo(authNetTransactionType.value());
+        assertThat(transactionRequest.getPoNumber()).isEqualTo(transaction.getKbTransactionId().toString());
 
         CustomerProfilePaymentType customerProfile = transactionRequest.getProfile();
         assertThat(customerProfile).isNotNull();
