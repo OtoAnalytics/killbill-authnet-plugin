@@ -30,8 +30,8 @@ import static org.easymock.EasyMock.verify;
 
 import com.womply.billing.killbill.plugins.AuthorizeNetServlet.Response;
 import com.womply.billing.killbill.plugins.db.AuthorizeNetDAO;
-import com.womply.killbill.resources.models.AuthorizeNetHealthResponse;
-import com.womply.killbill.resources.models.PaymentGatewayAccount;
+import com.womply.billing.killbill.plugins.models.AuthorizeNetHealthResponse;
+import com.womply.billing.killbill.plugins.models.PaymentGatewayAccount;
 
 import net.authorize.api.contract.v1.AuthenticateTestResponse;
 import net.authorize.api.contract.v1.MessageTypeEnum;

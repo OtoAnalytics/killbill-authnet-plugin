@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.womply.killbill.resources.models;
+package com.womply.billing.killbill.plugins.models;
 
 import lombok.Data;
 
