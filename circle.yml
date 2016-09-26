@@ -19,6 +19,7 @@ dependencies:
   cache_directories:
     - ~/docker_cache
   pre:
+    - eval echo $GPG_KEY | gpg --import
     - setup-java-service.sh
   override:
     - build-java-service.sh
