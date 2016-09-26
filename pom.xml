@@ -738,7 +738,7 @@
                             <!-- Property bundle.activator.class is defined in individual plugins -->
                             <Bundle-Activator>${bundle.activator.class}</Bundle-Activator>
                             <Export-Package/>
-                            <Private-Package>com.womply.billing.killbill.plugins.*</Private-Package>
+                            <Private-Package>com.womply.billing.killbill.plugins.*;com.womply.killbill.resources.models</Private-Package>
                             <!-- Optional resolution because exported by the Felix system bundle -->
                             <Import-Package>
                                 org.xml.sax;
@@ -1368,7 +1368,7 @@
                 </plugins>
             </build>
         </profile>
-        <profile>
+        <!--profile>
             <id>sonatype-release</id>
             <activation>
                 <property>
@@ -1391,7 +1391,7 @@
                     </plugin>
                 </plugins>
             </build>
-        </profile>
+        </profile-->
     </profiles>
     <distributionManagement>
         <repository>
