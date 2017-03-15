@@ -29,7 +29,7 @@ import net.authorize.api.contract.v1.PaymentProfile;
 import net.authorize.api.contract.v1.TransactionRequestType;
 import net.authorize.api.controller.CreateTransactionController;
 import org.killbill.billing.catalog.api.Currency;
-import org.killbill.killbill.osgi.libs.killbill.OSGIKillbillLogService;
+import org.killbill.billing.osgi.libs.killbill.OSGIKillbillLogService;
 import org.osgi.service.log.LogService;
 
 /**

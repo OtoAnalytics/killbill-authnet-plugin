@@ -17,6 +17,7 @@
 package com.womply.billing.killbill.plugins;
 
 import org.killbill.billing.catalog.api.Currency;
+import org.killbill.billing.osgi.libs.killbill.OSGIKillbillLogService;
 import org.killbill.billing.payment.api.PaymentMethodPlugin;
 import org.killbill.billing.payment.api.PluginProperty;
 import org.killbill.billing.payment.plugin.api.GatewayNotification;
@@ -29,7 +30,6 @@ import org.killbill.billing.plugin.api.PluginProperties;
 import org.killbill.billing.util.callcontext.CallContext;
 import org.killbill.billing.util.callcontext.TenantContext;
 import org.killbill.billing.util.entity.Pagination;
-import org.killbill.killbill.osgi.libs.killbill.OSGIKillbillLogService;
 
 import java.math.BigDecimal;
 import java.util.List;

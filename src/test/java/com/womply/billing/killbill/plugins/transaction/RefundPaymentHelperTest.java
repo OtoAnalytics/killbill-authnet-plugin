@@ -39,10 +39,10 @@ import net.authorize.api.contract.v1.TransactionTypeEnum;
 import org.easymock.Capture;
 import org.jooq.types.ULong;
 import org.killbill.billing.catalog.api.Currency;
+import org.killbill.billing.osgi.libs.killbill.OSGIKillbillLogService;
 import org.killbill.billing.payment.api.TransactionType;
 import org.killbill.billing.payment.plugin.api.PaymentPluginStatus;
 import org.killbill.billing.tenant.api.TenantApiException;
-import org.killbill.killbill.osgi.libs.killbill.OSGIKillbillLogService;
 import org.testng.annotations.Test;
 
 import java.math.BigDecimal;

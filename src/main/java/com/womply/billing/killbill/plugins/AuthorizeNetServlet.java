@@ -32,9 +32,9 @@ import net.authorize.api.contract.v1.AuthenticateTestResponse;
 import net.authorize.api.contract.v1.MessageTypeEnum;
 import net.authorize.api.contract.v1.MessagesType;
 import org.apache.commons.lang3.StringUtils;
+import org.killbill.billing.osgi.libs.killbill.OSGIKillbillAPI;
 import org.killbill.billing.tenant.api.Tenant;
 import org.killbill.billing.tenant.api.TenantApiException;
-import org.killbill.killbill.osgi.libs.killbill.OSGIKillbillAPI;
 import org.osgi.service.log.LogService;
 
 import java.io.IOException;

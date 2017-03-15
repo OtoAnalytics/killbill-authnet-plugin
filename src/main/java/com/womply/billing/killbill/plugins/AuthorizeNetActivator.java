@@ -22,9 +22,8 @@ import com.womply.billing.killbill.plugins.db.AuthorizeNetDAO;
 import com.womply.billing.killbill.plugins.db.AuthorizeNetDAOImpl;
 
 import org.killbill.billing.osgi.api.OSGIPluginProperties;
+import org.killbill.billing.osgi.libs.killbill.KillbillActivatorBase;
 import org.killbill.billing.payment.plugin.api.PaymentPluginApi;
-import org.killbill.killbill.osgi.libs.killbill.KillbillActivatorBase;
-import org.killbill.killbill.osgi.libs.killbill.OSGIKillbillEventDispatcher;
 import org.osgi.framework.BundleContext;
 
 import java.util.Hashtable;
@@ -59,12 +58,6 @@ public class AuthorizeNetActivator extends KillbillActivatorBase {
         // Register a servlet
         final AuthorizeNetServlet servlet = new AuthorizeNetServlet(killbillAPI, dao, logService, service);
         registerServlet(context, servlet);
-    }
-
-    @Override
-    public OSGIKillbillEventDispatcher.OSGIKillbillEventHandler getOSGIKillbillEventHandler() {
-        // we don't have an event listener yet
-        return null;
     }
 
     private void registerServlet(final BundleContext context, final HttpServlet servlet) {
