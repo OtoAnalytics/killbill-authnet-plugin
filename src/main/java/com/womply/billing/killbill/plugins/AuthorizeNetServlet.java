@@ -17,8 +17,8 @@
 package com.womply.billing.killbill.plugins;
 
 import com.womply.billing.killbill.plugins.db.AuthorizeNetDAO;
-import com.womply.killbill.resources.models.AuthorizeNetHealthResponse;
-import com.womply.killbill.resources.models.PaymentGatewayAccount;
+import com.womply.billing.killbill.plugins.models.AuthorizeNetHealthResponse;
+import com.womply.billing.killbill.plugins.models.PaymentGatewayAccount;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;

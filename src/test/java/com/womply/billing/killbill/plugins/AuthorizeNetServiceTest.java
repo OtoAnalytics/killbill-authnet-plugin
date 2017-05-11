@@ -39,8 +39,8 @@ import com.womply.billing.killbill.plugins.models.AuthorizeNetPaymentMethod;
 import com.womply.billing.killbill.plugins.models.AuthorizeNetPaymentMethodTest;
 import com.womply.billing.killbill.plugins.models.AuthorizeNetPaymentTransactionInfo;
 import com.womply.billing.killbill.plugins.models.AuthorizeNetTransactionInfo;
+import com.womply.billing.killbill.plugins.models.PaymentGatewayAccount;
 import com.womply.billing.killbill.plugins.transaction.RefundPaymentHelper;
-import com.womply.killbill.resources.models.PaymentGatewayAccount;
 
 import net.authorize.api.contract.v1.CreateCustomerProfileRequest;
 import net.authorize.api.contract.v1.CreateCustomerProfileResponse;
