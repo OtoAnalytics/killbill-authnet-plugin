@@ -107,7 +107,7 @@ public class AuthorizeNetServletTest {
 
         assertThat(responseCapture.hasCaptured()).isTrue();
         Response response = responseCapture.getValue();
-        assertThat(response.isOk()).isTrue();
+        assertThat(response.isOk()).isFalse();
         AuthorizeNetHealthResponse health = (AuthorizeNetHealthResponse)response.getData();
         assertThat(health.isHealthy()).isFalse();
         assertThat(health.getActionTime()).isEqualTo(-1);
@@ -182,7 +182,7 @@ public class AuthorizeNetServletTest {
 
         assertThat(responseCapture.hasCaptured()).isTrue();
         Response response = responseCapture.getValue();
-        assertThat(response.isOk()).isTrue();
+        assertThat(response.isOk()).isFalse();
         AuthorizeNetHealthResponse health = (AuthorizeNetHealthResponse)response.getData();
         assertThat(health.isHealthy()).isFalse();
         assertThat(health.getActionTime()).isEqualTo(-1);

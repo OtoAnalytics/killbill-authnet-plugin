@@ -221,13 +221,15 @@ public class AuthorizeNetServlet extends HttpServlet {
             authenticateTestResponse = service.getAuthenticateTestResponse(tenantId);
 
         } catch (TenantApiException e) {
-            respondWithError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error getting tenant", e);
+            respondWithError(response, HttpServletResponse.SC_SERVICE_UNAVAILABLE, "Error getting tenant", e);
         }
 
         if (authenticateTestResponse == null) {
+            response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
             health.setHealthy(false);
             health.setMessage("Got null AuthenticateTestResponse from Auth.Net");
         } else if (authenticateTestResponse.getMessages().getResultCode() != MessageTypeEnum.OK) {
+            response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
             health.setHealthy(false);
 
             StringBuilder detailMessage = new StringBuilder();
@@ -243,7 +245,7 @@ public class AuthorizeNetServlet extends HttpServlet {
 
         }
 
-        sendResponseJson(health, response);
+        sendResponseJson(health.isHealthy(), health, response);
     }
 
     protected void handleAddCustomerProfile(final HttpServletRequest request, final HttpServletResponse response)
@@ -338,8 +340,13 @@ public class AuthorizeNetServlet extends HttpServlet {
 
     protected <T> void sendResponseJson(final T object, final HttpServletResponse response)
             throws IOException {
+        sendResponseJson(true, object, response);
+    }
 
-        Response<T> responseObject = new Response<>(true, object, null);
+    protected <T> void sendResponseJson(boolean isHealthy, final T object, final HttpServletResponse response)
+            throws IOException {
+
+        Response<T> responseObject = new Response<>(isHealthy, object, null);
         writeResponseJson(responseObject, response);
     }
 
