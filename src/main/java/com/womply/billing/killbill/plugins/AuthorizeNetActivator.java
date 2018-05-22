@@ -48,7 +48,8 @@ public class AuthorizeNetActivator extends KillbillActivatorBase {
                 new AuthorizeNetConfigurableHandler(PLUGIN_NAME, killbillAPI, logService);
         final AuthorizeNetAuthenticationService authenticationService =
                 new AuthorizeNetAuthenticationService(configurableHandler);
-        final AuthorizeNetTransactionService transactionService = new AuthorizeNetTransactionService(dao, logService);
+        final AuthorizeNetTransactionService transactionService =
+                new AuthorizeNetTransactionService(dao, logService, configProperties);
         final AuthorizeNetService service =
                 new AuthorizeNetService(killbillAPI, logService, dao, authenticationService, transactionService);
         final PaymentPluginApi paymentPluginApi =

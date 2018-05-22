@@ -16,6 +16,7 @@
 
 package com.womply.billing.killbill.plugins;
 
+import static com.womply.billing.killbill.plugins.AuthorizeNetTransactionService.AUTH_NET_MERCHANT_DESCRIPTOR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
 import static org.easymock.EasyMock.capture;
@@ -25,6 +26,7 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.newCapture;
 import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 
 import com.womply.billing.killbill.plugins.db.AuthorizeNetDAO;
 import com.womply.billing.killbill.plugins.db.MysqlAdapter;
@@ -44,6 +46,7 @@ import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.jooq.types.ULong;
 import org.killbill.billing.catalog.api.Currency;
+import org.killbill.billing.osgi.libs.killbill.OSGIConfigPropertiesService;
 import org.killbill.billing.osgi.libs.killbill.OSGIKillbillLogService;
 import org.killbill.billing.payment.api.TransactionType;
 import org.killbill.billing.payment.plugin.api.PaymentPluginStatus;
@@ -92,8 +95,12 @@ public class AuthorizeNetTransactionServiceTest {
 
         OSGIKillbillLogService logServiceMock = createMock(OSGIKillbillLogService.class);
 
+        OSGIConfigPropertiesService propertiesMock = createMock(OSGIConfigPropertiesService.class);
+        expect(propertiesMock.getString(eq(AUTH_NET_MERCHANT_DESCRIPTOR))).andReturn("MERCHANT 5035551234");
+        replay(propertiesMock);
+
         AuthorizeNetTransactionService service = EasyMock.partialMockBuilder(AuthorizeNetTransactionService.class)
-                .withConstructor(daoMock, logServiceMock)
+                .withConstructor(daoMock, logServiceMock, propertiesMock)
                 .addMockedMethod("getNewTransactionRequest")
                 .addMockedMethod("getNewTransactionController")
                 .createMock();
@@ -160,6 +167,7 @@ public class AuthorizeNetTransactionServiceTest {
         assertThat(result.getGatewayErrorCode()).isEmpty();
         assertThat(result.getFirstPaymentReferenceId()).isEqualTo(expectedTransId);
         assertThat(result.getSecondPaymentReferenceId()).isEqualTo(expectedAuthCode);
+        verify(responseRecord, daoMock, service, controllerMock, propertiesMock);
     }
 
     @Test
@@ -195,8 +203,12 @@ public class AuthorizeNetTransactionServiceTest {
 
         OSGIKillbillLogService logServiceMock = createMock(OSGIKillbillLogService.class);
 
+        OSGIConfigPropertiesService propertiesMock = createMock(OSGIConfigPropertiesService.class);
+        expect(propertiesMock.getString(AUTH_NET_MERCHANT_DESCRIPTOR)).andReturn("MERCHANT 5035551234");
+        replay(propertiesMock);
+
         AuthorizeNetTransactionService service = EasyMock.partialMockBuilder(AuthorizeNetTransactionService.class)
-                .withConstructor(daoMock, logServiceMock)
+                .withConstructor(daoMock, logServiceMock, propertiesMock)
                 .addMockedMethod("getNewTransactionRequest")
                 .addMockedMethod("getNewTransactionController")
                 .createMock();
@@ -265,6 +277,7 @@ public class AuthorizeNetTransactionServiceTest {
         assertThat(result.getGatewayErrorCode()).isNotEmpty().isEqualTo(expectedErrorCode);
         assertThat(result.getFirstPaymentReferenceId()).isEqualTo(expectedTransId);
         assertThat(result.getSecondPaymentReferenceId()).isNull();
+        verify(responseRecord, daoMock, service, controllerMock, propertiesMock);
     }
 
     @Test
@@ -300,8 +313,12 @@ public class AuthorizeNetTransactionServiceTest {
 
         OSGIKillbillLogService logServiceMock = createMock(OSGIKillbillLogService.class);
 
+        OSGIConfigPropertiesService propertiesMock = createMock(OSGIConfigPropertiesService.class);
+        expect(propertiesMock.getString(AUTH_NET_MERCHANT_DESCRIPTOR)).andReturn("MERCHANT 5035551234");
+        replay(propertiesMock);
+
         AuthorizeNetTransactionService service = EasyMock.partialMockBuilder(AuthorizeNetTransactionService.class)
-                .withConstructor(daoMock, logServiceMock)
+                .withConstructor(daoMock, logServiceMock, propertiesMock)
                 .addMockedMethod("getNewTransactionRequest")
                 .addMockedMethod("getNewTransactionController")
                 .createMock();
@@ -323,6 +340,7 @@ public class AuthorizeNetTransactionServiceTest {
         } catch (RuntimeException e) {
             assertThat(e.getMessage()).isNotEmpty().contains("was null");
         }
+        verify(daoMock, service, controllerMock, propertiesMock);
     }
 
     @Test
@@ -332,7 +350,11 @@ public class AuthorizeNetTransactionServiceTest {
         AuthorizeNetTransactionInfo transaction = new AuthorizeNetTransactionInfo();
         transaction.setCurrency(expectedCurrency);
 
-        AuthorizeNetTransactionService service = new AuthorizeNetTransactionService(null, null);
+        OSGIConfigPropertiesService propertiesMock = createMock(OSGIConfigPropertiesService.class);
+        expect(propertiesMock.getString(AUTH_NET_MERCHANT_DESCRIPTOR)).andReturn("MERCHANT 5035551234");
+        replay(propertiesMock);
+
+        AuthorizeNetTransactionService service = new AuthorizeNetTransactionService(null, null, propertiesMock);
 
         try {
             service.createTransactionOnPaymentProfile(transaction, null);
@@ -340,6 +362,7 @@ public class AuthorizeNetTransactionServiceTest {
         } catch (RuntimeException e) {
             assertThat(e.getMessage()).isNotEmpty().contains("Unsupported currency for transaction");
         }
+        verify(propertiesMock);
     }
 
     @Test
@@ -380,8 +403,12 @@ public class AuthorizeNetTransactionServiceTest {
         logServiceMock.log(eq(LogService.LOG_ERROR), capture(messageCapture), eq(testException));
         expectLastCall().once();
 
+        OSGIConfigPropertiesService propertiesMock = createMock(OSGIConfigPropertiesService.class);
+        expect(propertiesMock.getString(AUTH_NET_MERCHANT_DESCRIPTOR)).andReturn("MERCHANT 5035551234");
+        replay(propertiesMock);
+
         AuthorizeNetTransactionService service = EasyMock.partialMockBuilder(AuthorizeNetTransactionService.class)
-                .withConstructor(daoMock, logServiceMock)
+                .withConstructor(daoMock, logServiceMock, propertiesMock)
                 .addMockedMethod("getNewTransactionRequest")
                 .addMockedMethod("getNewTransactionController")
                 .createMock();
@@ -412,6 +439,8 @@ public class AuthorizeNetTransactionServiceTest {
         String message = messageCapture.getValue();
         assertThat(message).contains("" + expectedRequestId)
                 .contains(expectedTransId);
+
+        verify(daoMock, service, controllerMock, propertiesMock);
     }
 
 }

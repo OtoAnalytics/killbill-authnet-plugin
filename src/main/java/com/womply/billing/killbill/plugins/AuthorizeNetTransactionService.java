@@ -29,6 +29,7 @@ import net.authorize.api.contract.v1.PaymentProfile;
 import net.authorize.api.contract.v1.TransactionRequestType;
 import net.authorize.api.controller.CreateTransactionController;
 import org.killbill.billing.catalog.api.Currency;
+import org.killbill.billing.osgi.libs.killbill.OSGIConfigPropertiesService;
 import org.killbill.billing.osgi.libs.killbill.OSGIKillbillLogService;
 import org.osgi.service.log.LogService;
 
@@ -37,12 +38,18 @@ import org.osgi.service.log.LogService;
  */
 public class AuthorizeNetTransactionService {
 
+    public static final String AUTH_NET_MERCHANT_DESCRIPTOR =
+            "org.killbill.billing.plugin.authorizenet.gateway.merchant.descriptor";
+
     private final AuthorizeNetDAO dao;
     private final OSGIKillbillLogService logService;
+    private final String merchantDescriptor;
 
-    public AuthorizeNetTransactionService(AuthorizeNetDAO dao, OSGIKillbillLogService logService) {
+    public AuthorizeNetTransactionService(AuthorizeNetDAO dao, OSGIKillbillLogService logService,
+                                          OSGIConfigPropertiesService configProperties) {
         this.dao = dao;
         this.logService = logService;
+        this.merchantDescriptor = configProperties.getString(AUTH_NET_MERCHANT_DESCRIPTOR);
     }
 
     /**
@@ -69,6 +76,12 @@ public class AuthorizeNetTransactionService {
         txnRequest.setProfile(customerPaymentProfile);
         txnRequest.setAmount(transaction.getAmount());
         txnRequest.setPoNumber(transaction.getKbTransactionId().toString());
+
+        // Not all processors support  setting the merchant descriptor at a per-transaction level.
+        // If a merchantDescriptor is configured, set it
+        if (merchantDescriptor != null && !merchantDescriptor.isEmpty()) {
+            txnRequest.setMerchantDescriptor(merchantDescriptor);
+        }
 
         if (transaction.doesReferenceTransaction()) {
             txnRequest.setRefTransId(transaction.getAuthorizeNetReferencedTransactionId());
