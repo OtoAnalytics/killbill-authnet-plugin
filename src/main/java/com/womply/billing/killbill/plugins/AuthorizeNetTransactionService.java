@@ -21,11 +21,13 @@ import com.womply.billing.killbill.plugins.jooq.tables.records.AuthorizeNetTrans
 import com.womply.billing.killbill.plugins.models.AuthorizeNetPaymentTransactionInfo;
 import com.womply.billing.killbill.plugins.models.AuthorizeNetTransactionInfo;
 
+import net.authorize.api.contract.v1.ArrayOfSetting;
 import net.authorize.api.contract.v1.CreateTransactionRequest;
 import net.authorize.api.contract.v1.CreateTransactionResponse;
 import net.authorize.api.contract.v1.CustomerProfilePaymentType;
 import net.authorize.api.contract.v1.MerchantAuthenticationType;
 import net.authorize.api.contract.v1.PaymentProfile;
+import net.authorize.api.contract.v1.SettingType;
 import net.authorize.api.contract.v1.TransactionRequestType;
 import net.authorize.api.controller.CreateTransactionController;
 import org.killbill.billing.catalog.api.Currency;
@@ -76,6 +78,15 @@ public class AuthorizeNetTransactionService {
         txnRequest.setProfile(customerPaymentProfile);
         txnRequest.setAmount(transaction.getAmount());
         txnRequest.setPoNumber(transaction.getKbTransactionId().toString());
+
+        // Set the recurringBilling flag to true for ALL charges (this may need to be more nuanced in the future)
+        SettingType recurringBillingSetting = new SettingType();
+        recurringBillingSetting.setSettingName("recurringBilling");
+        recurringBillingSetting.setSettingValue("1");
+
+        ArrayOfSetting settings = new ArrayOfSetting();
+        settings.getSetting().add(recurringBillingSetting);
+        txnRequest.setTransactionSettings(settings);
 
         // Not all processors support  setting the merchant descriptor at a per-transaction level.
         // If a merchantDescriptor is configured, set it

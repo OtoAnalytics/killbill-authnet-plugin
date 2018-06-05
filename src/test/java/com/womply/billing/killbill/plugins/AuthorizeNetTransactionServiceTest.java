@@ -38,6 +38,7 @@ import net.authorize.api.contract.v1.CreateTransactionRequest;
 import net.authorize.api.contract.v1.CreateTransactionResponse;
 import net.authorize.api.contract.v1.CustomerProfilePaymentType;
 import net.authorize.api.contract.v1.PaymentProfile;
+import net.authorize.api.contract.v1.SettingType;
 import net.authorize.api.contract.v1.TransactionRequestType;
 import net.authorize.api.contract.v1.TransactionResponse;
 import net.authorize.api.contract.v1.TransactionTypeEnum;
@@ -56,6 +57,7 @@ import org.testng.annotations.Test;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -147,6 +149,13 @@ public class AuthorizeNetTransactionServiceTest {
         assertThat(transactionRequest.getAmount()).isEqualTo(expectedAmount);
         assertThat(transactionRequest.getTransactionType()).isEqualTo(authNetTransactionType.value());
         assertThat(transactionRequest.getPoNumber()).isEqualTo(transaction.getKbTransactionId().toString());
+        assertThat(transactionRequest.getMerchantDescriptor()).isEqualTo("MERCHANT 5035551234");
+
+        List<SettingType> settings = transactionRequest.getTransactionSettings().getSetting();
+        assertThat(settings).hasSize(1);
+        SettingType setting = settings.get(0);
+        assertThat(setting.getSettingName()).isEqualTo("recurringBilling");
+        assertThat(setting.getSettingValue()).isEqualTo("1");
 
         CustomerProfilePaymentType customerProfile = transactionRequest.getProfile();
         assertThat(customerProfile).isNotNull();

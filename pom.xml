@@ -21,7 +21,7 @@
     <groupId>com.womply.killbill.plugins</groupId>
     <artifactId>authorize-net-plugin</artifactId>
     <packaging>bundle</packaging>
-    <version>2.2-SNAPSHOT</version>
+    <version>2.3-SNAPSHOT</version>
 
     <name>KillBill Plugin for Authorize.net</name>
     <description>A Java implementation of a KillBill Payment Plugin that uses Authorize.Net as a payment gateway</description>
