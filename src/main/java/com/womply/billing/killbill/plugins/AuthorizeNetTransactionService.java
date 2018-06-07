@@ -63,6 +63,8 @@ public class AuthorizeNetTransactionService {
             MerchantAuthenticationType authentication) {
         validate(transaction);
 
+        final String traceKey = transaction.getKbAccountId() + " __ " + transaction.getKbTransactionId();
+
         long requestId = dao.logTransactionRequest(transaction);
         transaction.setRequestId(requestId);
 
@@ -103,12 +105,19 @@ public class AuthorizeNetTransactionService {
         apiRequest.setTransactionRequest(txnRequest);
 
         CreateTransactionController controller = getNewTransactionController(apiRequest);
-        controller.execute();
+        try {
+            controller.execute();
+            logService.log(LogService.LOG_INFO, "Executed transaction for " + traceKey);
+        } catch (RuntimeException e) {
+            logService.log(LogService.LOG_ERROR, "Caught exception while executing transaction for " + traceKey +
+                    " : " + e.getMessage(), e);
+            throw e;
+        }
 
         CreateTransactionResponse response = controller.getApiResponse();
 
         if (response == null) {
-            throw new RuntimeException("Authorize.Net response to createTransactionRequest was null");
+            throw new RuntimeException("Authorize.Net response to createTransactionRequest was null for " + traceKey);
         }
 
         try {

@@ -409,7 +409,10 @@ public class AuthorizeNetTransactionServiceTest {
 
         OSGIKillbillLogService logServiceMock = createMock(OSGIKillbillLogService.class);
         Capture<String> messageCapture = newCapture();
-        logServiceMock.log(eq(LogService.LOG_ERROR), capture(messageCapture), eq(testException));
+        Capture<String> messageCapture2 = newCapture();
+        logServiceMock.log(eq(LogService.LOG_INFO), capture(messageCapture));
+        expectLastCall().once();
+        logServiceMock.log(eq(LogService.LOG_ERROR), capture(messageCapture2), eq(testException));
         expectLastCall().once();
 
         OSGIConfigPropertiesService propertiesMock = createMock(OSGIConfigPropertiesService.class);
@@ -446,6 +449,10 @@ public class AuthorizeNetTransactionServiceTest {
 
         assertThat(messageCapture.hasCaptured()).isTrue();
         String message = messageCapture.getValue();
+        assertThat(message).startsWith("Executed transaction for ");
+
+        assertThat(messageCapture2.hasCaptured()).isTrue();
+        message = messageCapture2.getValue();
         assertThat(message).contains("" + expectedRequestId)
                 .contains(expectedTransId);
 
