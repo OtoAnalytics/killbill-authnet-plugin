@@ -1,0 +1,60 @@
+version: 2
+jobs:
+  build:
+    machine: true
+    environment:
+      DOCKER_HOST: unix:///var/run/docker.sock
+      CIRCLE_TEST_REPORTS: /tmp/test_reports/
+    working_directory: ~/project
+    steps:
+      - checkout
+      - run: git clone git@github.com:OtoAnalytics/build-scripts.git ~/build-scripts
+      - run: cd ~/build-scripts && git checkout master
+      - run: echo 'export PATH=${PATH}:~/build-scripts/circle2' >> $BASH_ENV
+      - restore_cache:
+          keys:
+            - project-cache-{{ .Branch }}
+            - project-cache
+      - run: eval echo $GPG_KEY | gpg --import
+      - run: setup-java-service.sh
+      - run: build-java-service.sh
+      - run: cache-java-service.sh
+      - save_cache:
+          key: project-cache-{{ .Branch }}-{{ .BuildNum }}
+          paths:
+            - ~/.m2
+            - ~/docker_cache
+      - store_test_results:
+          path: /tmp/test_reports/junit
+      - persist_to_workspace:
+          root: ..
+          paths:
+            - project
+            - build-scripts
+
+  deploy_master:
+    machine: true
+    working_directory: ~/project
+    steps:
+      - attach_workspace:
+          at: ..
+      - add_ssh_keys
+      - run: echo 'export PATH=${PATH}:~/build-scripts/circle2' >> $BASH_ENV
+      - restore_cache:
+          keys:
+            - project-cache-{{ .Branch }}
+            - project-cache
+      - run: deploy-java-library.sh
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build
+      - deploy_master:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - master
