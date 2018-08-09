@@ -36,6 +36,9 @@ public class AuthorizeNetPaymentMethod extends PluginPaymentMethodPlugin {
     public static final String KAUI_FIELD_CARD_EXPIRATION_MONTH = "Expiration month: ";
     public static final String KAUI_FIELD_CARD_EXPIRATION_YEAR = "Expiration year: ";
     public static final String KAUI_FIELD_CARD_LAST_4 = "Last 4 digits: ";
+    public static final String KAUI_FIELD_ACH_ROUTING_NUMBER = "ACH Routing Number: ";
+    public static final String KAUI_FIELD_ACH_INSTITUTION_NAME = "ACH Institution Name: ";
+    public static final String KAUI_FIELD_ACH_ACCOUNT_NUMBER_LAST_4 = "ACH Account Number Last 4: ";
     public static final String KAUI_FIELD_CARD_ZIP = "Zip code: ";
     public static final String KAUI_FIELD_AUTHORIZE_NET_CUSTOMER_PROFILE_ID = "Authorize.net Customer Profile Id: ";
     public static final String KAUI_FIELD_AUTHORIZE_NET_PAYMENT_PROFILE_ID = "Authorize.net Payment Profile Id: ";

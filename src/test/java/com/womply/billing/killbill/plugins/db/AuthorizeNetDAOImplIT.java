@@ -41,10 +41,13 @@ import org.testng.annotations.Test;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Integration tests for the AuthorizeNetDAOImpl class.
@@ -58,6 +61,9 @@ public class AuthorizeNetDAOImplIT {
     public static final String PLUGIN_FIELDS_EXP_MONTH = "cc_exp_month";
     public static final String PLUGIN_FIELDS_EXP_YEAR = "cc_exp_year";
     public static final String PLUGIN_FIELDS_LAST_FOUR = "cc_last_4";
+    public static final String PLUGIN_FIELDS_ACH_INSTITUTION_NAME = "ach_institution_name";
+    public static final String PLUGIN_FIELDS_ACH_ROUTING_NUMBER = "ach_routing_number";
+    public static final String PLUGIN_FIELDS_ACH_ACCOUNT_LAST_FOUR = "ach_account_last_4";
     public static final String PLUGIN_FIELDS_ADDRESS = "address";
     public static final String PLUGIN_FIELDS_CITY = "city";
     public static final String PLUGIN_FIELDS_STATE = "state";
@@ -68,6 +74,14 @@ public class AuthorizeNetDAOImplIT {
     private static final String dbPassword = System.getProperty("db.password");
     private static final String dbUrl = System.getProperty("db.url");
     private static final String dbDriver = System.getProperty("db.drivername");
+
+    private static final Set<String> ACH_FIELD_NAMES = new HashSet<>();
+
+    static {
+        ACH_FIELD_NAMES.add(PLUGIN_FIELDS_ACH_INSTITUTION_NAME);
+        ACH_FIELD_NAMES.add(PLUGIN_FIELDS_ACH_ROUTING_NUMBER);
+        ACH_FIELD_NAMES.add(PLUGIN_FIELDS_ACH_ACCOUNT_LAST_FOUR);
+    }
 
     private AuthorizeNetDAOImpl dao;
     private AuthorizeNetTestDAO testDao;
@@ -139,6 +153,29 @@ public class AuthorizeNetDAOImplIT {
 
         Map<String, Object> actualDataFields = getActualDataFields(record);
         assertThat(actualDataFields).isEqualTo(expectedDataFields);
+    }
+
+    @Test
+    public void addPaymentMethodWithAchFieldsSet() throws Exception {
+        final UUID kbAccountId = UUID.randomUUID();
+        final UUID kbPaymentMethodId = UUID.randomUUID();
+        final String authNetCustomerProfileId = "test-auth-net-cust-profile-id";
+        final String authMetPaymentProfileId = "test-auth-net-payment-profile-id";
+        final UUID kbTenantId = UUID.randomUUID();
+        final Map<String, String> properties = new HashMap<>();
+
+        properties.put(PLUGIN_FIELDS_ACH_INSTITUTION_NAME, "First National Bank of Brent");
+        properties.put(PLUGIN_FIELDS_ACH_ROUTING_NUMBER, "123456789");
+        properties.put(PLUGIN_FIELDS_ACH_ACCOUNT_LAST_FOUR, "4321");
+        properties.put(PLUGIN_FIELDS_EXT_TOKEN, authMetPaymentProfileId);
+
+        dao.addPaymentMethod(kbAccountId, kbPaymentMethodId, false, authNetCustomerProfileId, properties, kbTenantId);
+
+        Map<String, Object> persistedData = dao.getPaymentMethod(kbAccountId, kbPaymentMethodId, kbTenantId, true);
+        Map<String, String> expectedAchFields = new HashMap<>(properties);
+        expectedAchFields.remove(PLUGIN_FIELDS_EXT_TOKEN);
+        Map<String, String> actualAchFields = getAchFields(persistedData);
+        assertThat(actualAchFields).isEqualTo(expectedAchFields);
     }
 
     @Test
@@ -540,6 +577,12 @@ public class AuthorizeNetDAOImplIT {
                 expectedProperties.get(PLUGIN_FIELDS_EXP_YEAR));
         kauiFields.put(AuthorizeNetPaymentMethod.KAUI_FIELD_CARD_LAST_4,
                 expectedProperties.get(PLUGIN_FIELDS_LAST_FOUR));
+        kauiFields.put(AuthorizeNetPaymentMethod.KAUI_FIELD_ACH_ROUTING_NUMBER,
+                expectedProperties.get(PLUGIN_FIELDS_ACH_ROUTING_NUMBER));
+        kauiFields.put(AuthorizeNetPaymentMethod.KAUI_FIELD_ACH_INSTITUTION_NAME,
+                expectedProperties.get(PLUGIN_FIELDS_ACH_INSTITUTION_NAME));
+        kauiFields.put(AuthorizeNetPaymentMethod.KAUI_FIELD_ACH_ACCOUNT_NUMBER_LAST_4,
+                expectedProperties.get(PLUGIN_FIELDS_ACH_ACCOUNT_LAST_FOUR));
         kauiFields.put(AuthorizeNetPaymentMethod.KAUI_FIELD_CARD_ZIP,
                 expectedProperties.get(PLUGIN_FIELDS_POSTAL_CODE));
 
@@ -570,6 +613,12 @@ public class AuthorizeNetDAOImplIT {
         }
 
         return creditCard;
+    }
+
+    private Map<String, String> getAchFields(Map<String, Object> persistedData) {
+        return persistedData.entrySet().stream()
+                .filter(e -> ACH_FIELD_NAMES.contains(e.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> (String) e.getValue()));
     }
 
     private Map<String, String> removeNullEntries(Map<String, String> map) {

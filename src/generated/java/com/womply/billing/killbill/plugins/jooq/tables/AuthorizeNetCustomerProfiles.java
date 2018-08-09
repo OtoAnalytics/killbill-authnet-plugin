@@ -36,7 +36,7 @@ import org.jooq.types.ULong;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AuthorizeNetCustomerProfiles extends TableImpl<AuthorizeNetCustomerProfilesRecord> {
 
-	private static final long serialVersionUID = 2096887417;
+	private static final long serialVersionUID = 1994134348;
 
 	/**
 	 * The reference instance of <code>authorize_net_customer_profiles</code>
@@ -124,7 +124,7 @@ public class AuthorizeNetCustomerProfiles extends TableImpl<AuthorizeNetCustomer
 	 */
 	@Override
 	public List<UniqueKey<AuthorizeNetCustomerProfilesRecord>> getKeys() {
-		return Arrays.<UniqueKey<AuthorizeNetCustomerProfilesRecord>>asList(Keys.KEY_AUTHORIZE_NET_CUSTOMER_PROFILES_PRIMARY);
+		return Arrays.<UniqueKey<AuthorizeNetCustomerProfilesRecord>>asList(Keys.KEY_AUTHORIZE_NET_CUSTOMER_PROFILES_PRIMARY, Keys.KEY_AUTHORIZE_NET_CUSTOMER_PROFILES_UNIQUE_AUTHORIZE_NET_CUSTOMER_PROFILES);
 	}
 
 	/**

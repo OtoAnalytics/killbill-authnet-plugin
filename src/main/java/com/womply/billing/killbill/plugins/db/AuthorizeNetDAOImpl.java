@@ -214,6 +214,12 @@ public class AuthorizeNetDAOImpl implements AuthorizeNetDAO {
                         .as(AuthorizeNetPaymentMethod.KAUI_FIELD_CARD_EXPIRATION_YEAR),
                 AUTHORIZE_NET_PAYMENT_METHODS.CC_LAST_4
                         .as(AuthorizeNetPaymentMethod.KAUI_FIELD_CARD_LAST_4),
+                AUTHORIZE_NET_PAYMENT_METHODS.ACH_ROUTING_NUMBER
+                        .as(AuthorizeNetPaymentMethod.KAUI_FIELD_ACH_ROUTING_NUMBER),
+                AUTHORIZE_NET_PAYMENT_METHODS.ACH_INSTITUTION_NAME.as(
+                        AuthorizeNetPaymentMethod.KAUI_FIELD_ACH_INSTITUTION_NAME),
+                AUTHORIZE_NET_PAYMENT_METHODS.ACH_ACCOUNT_LAST_4
+                        .as(AuthorizeNetPaymentMethod.KAUI_FIELD_ACH_ACCOUNT_NUMBER_LAST_4),
                 AUTHORIZE_NET_PAYMENT_METHODS.ZIP
                         .as(AuthorizeNetPaymentMethod.KAUI_FIELD_CARD_ZIP)
         )

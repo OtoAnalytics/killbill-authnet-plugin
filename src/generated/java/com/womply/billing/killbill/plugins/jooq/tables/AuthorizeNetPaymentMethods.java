@@ -36,7 +36,7 @@ import org.jooq.types.ULong;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AuthorizeNetPaymentMethods extends TableImpl<AuthorizeNetPaymentMethodsRecord> {
 
-	private static final long serialVersionUID = -141945168;
+	private static final long serialVersionUID = 1968910092;
 
 	/**
 	 * The reference instance of <code>authorize_net_payment_methods</code>
@@ -105,6 +105,21 @@ public class AuthorizeNetPaymentMethods extends TableImpl<AuthorizeNetPaymentMet
 	 * The column <code>authorize_net_payment_methods.cc_last_4</code>.
 	 */
 	public final TableField<AuthorizeNetPaymentMethodsRecord, String> CC_LAST_4 = createField("cc_last_4", org.jooq.impl.SQLDataType.VARCHAR.length(255), this, "");
+
+	/**
+	 * The column <code>authorize_net_payment_methods.ach_routing_number</code>.
+	 */
+	public final TableField<AuthorizeNetPaymentMethodsRecord, String> ACH_ROUTING_NUMBER = createField("ach_routing_number", org.jooq.impl.SQLDataType.VARCHAR.length(255), this, "");
+
+	/**
+	 * The column <code>authorize_net_payment_methods.ach_institution_name</code>.
+	 */
+	public final TableField<AuthorizeNetPaymentMethodsRecord, String> ACH_INSTITUTION_NAME = createField("ach_institution_name", org.jooq.impl.SQLDataType.VARCHAR.length(255), this, "");
+
+	/**
+	 * The column <code>authorize_net_payment_methods.ach_account_last_4</code>.
+	 */
+	public final TableField<AuthorizeNetPaymentMethodsRecord, String> ACH_ACCOUNT_LAST_4 = createField("ach_account_last_4", org.jooq.impl.SQLDataType.VARCHAR.length(255), this, "");
 
 	/**
 	 * The column <code>authorize_net_payment_methods.address</code>.

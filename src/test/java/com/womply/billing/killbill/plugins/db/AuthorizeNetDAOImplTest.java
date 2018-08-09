@@ -51,6 +51,10 @@ public class AuthorizeNetDAOImplTest {
                                 "`authorize_net_payment_methods`.`cc_exp_month` as `Expiration month: `, " +
                                 "`authorize_net_payment_methods`.`cc_exp_year` as `Expiration year: `, " +
                                 "`authorize_net_payment_methods`.`cc_last_4` as `Last 4 digits: `, " +
+                                "`authorize_net_payment_methods`.`ach_routing_number` as `ACH Routing Number: `, " +
+                                "`authorize_net_payment_methods`.`ach_institution_name` as `ACH Institution Name: `, " +
+                                "`authorize_net_payment_methods`.`ach_account_last_4` " +
+                                    "as `ACH Account Number Last 4: `, " +
                                 "`authorize_net_payment_methods`.`zip` as `Zip code: ` " +
                                 "from `authorize_net_payment_methods` " +
                                 "where (`authorize_net_payment_methods`.`kb_account_id` = ? " +
@@ -79,6 +83,9 @@ public class AuthorizeNetDAOImplTest {
                                 "`authorize_net_payment_methods`.`cc_exp_month`, " +
                                 "`authorize_net_payment_methods`.`cc_exp_year`, " +
                                 "`authorize_net_payment_methods`.`cc_last_4`, " +
+                                "`authorize_net_payment_methods`.`ach_routing_number`, " +
+                                "`authorize_net_payment_methods`.`ach_institution_name`, " +
+                                "`authorize_net_payment_methods`.`ach_account_last_4`, " +
                                 "`authorize_net_payment_methods`.`address`, " +
                                 "`authorize_net_payment_methods`.`city`, " +
                                 "`authorize_net_payment_methods`.`state`, " +
