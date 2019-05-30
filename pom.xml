@@ -21,7 +21,7 @@
     <groupId>com.womply.killbill.plugins</groupId>
     <artifactId>authorize-net-plugin</artifactId>
     <packaging>bundle</packaging>
-    <version>2.6-SNAPSHOT</version>
+    <version>2.7-SNAPSHOT</version>
 
     <name>KillBill Plugin for Authorize.net</name>
     <description>A Java implementation of a KillBill Payment Plugin that uses Authorize.Net as a payment gateway</description>
@@ -57,7 +57,7 @@
         <killbill-api.version>0.50.2</killbill-api.version>
 
         <osgi.version>5.0.0</osgi.version>
-        <version.checkstyle>2.16</version.checkstyle>
+        <version.checkstyle>3.1.0</version.checkstyle>
         <version.docker.plugin>0.13.4</version.docker.plugin>
         <version.findbugs.plugin>3.0.3</version.findbugs.plugin>
         <version.flyway>3.2.1</version.flyway>
@@ -540,7 +540,7 @@
                         <dependency>
                             <groupId>com.puppycrawl.tools</groupId>
                             <artifactId>checkstyle</artifactId>
-                            <version>6.9</version>
+                            <version>8.19</version>
                         </dependency>
                     </dependencies>
                     <configuration>
