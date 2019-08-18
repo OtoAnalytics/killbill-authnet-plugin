@@ -67,7 +67,7 @@
         <version.mysql-driver>5.1.36</version.mysql-driver>
         <version.pmd>3.6</version.pmd>
         <version.slf4j>1.7.21</version.slf4j>
-        <version.testng>6.9.4</version.testng>
+        <version.testng>7.0.0</version.testng>
         <version.dbcp2>2.1.1</version.dbcp2>
         <test.timezone>UTC</test.timezone>
         <test.fork-count>1</test.fork-count>
