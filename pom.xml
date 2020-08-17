@@ -59,7 +59,7 @@
         <osgi.version>5.0.0</osgi.version>
         <version.checkstyle>3.1.0</version.checkstyle>
         <version.docker.plugin>0.13.4</version.docker.plugin>
-        <version.findbugs.plugin>3.0.3</version.findbugs.plugin>
+        <version.findbugs.plugin>3.0.5</version.findbugs.plugin>
         <version.flyway>3.2.1</version.flyway>
         <version.jooq>3.6.2</version.jooq>
         <version.jackson>2.9.9</version.jackson>
@@ -1070,7 +1070,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>1.9.1</version>
+                    <version>3.2.0</version>
                     <executions>
                         <execution>
                             <id>generate-sources</id>
