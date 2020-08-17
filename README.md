@@ -11,6 +11,22 @@ decided to implement an Authorize.net specific payment plugin in java.
 The plugin needs tables added to the killbill database.  The maven build sets these (and the raw killbill 
 tables) up via flyway, with the migration scripts stored in `src/test/resources/db/migration`
 
+## Build with Docker ##
+
+```
+git clone https://github.com/OtoAnalytics/killbill-authnet-plugin.git
+cd killbill-authnet-plugin
+docker run -it --rm \
+  --name ${PWD##*/} \
+  -v "${HOME}"/.m2:/root/.m2 \
+  -v "$(pwd)":/usr/src/mymaven \
+  -w /usr/src/mymaven \
+  maven:3.6.3-openjdk-8 \
+  mvn clean package
+```
+The jars will be found in the target directory and can then be copied into
+a Kill Bill container using `docker cp` and installed using `kpm`.
+
 ## Configuration ##
 
 The following Tenant Properties are used to configure the Authorize.net environment (see 
