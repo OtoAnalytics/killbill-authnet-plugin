@@ -1042,6 +1042,9 @@
                             <goals>
                                 <goal>build</goal>
                             </goals>
+			    <configuration>
+				<dockerHost>unix:///var/run/docker.sock</dockerHost>
+			    </configuration>
                         </execution>
                         <execution>
                             <id>start</id>
