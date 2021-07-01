@@ -59,8 +59,7 @@
         <osgi.version>5.0.0</osgi.version>
         <version.checkstyle>3.1.0</version.checkstyle>
         <version.docker.plugin>0.13.4</version.docker.plugin>
-        <version.findbugs.plugin>3.0.3</version.findbugs.plugin>
-        <version.flyway>3.2.1</version.flyway>
+        <version.flyway>6.4.0</version.flyway>
         <version.jooq>3.6.2</version.jooq>
         <version.jackson>2.9.9</version.jackson>
         <version.lombok>1.16.4</version.lombok>
@@ -564,29 +563,6 @@
                 </plugin>
 
                 <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>findbugs-maven-plugin</artifactId>
-                    <version>${version.findbugs.plugin}</version>
-                    <configuration>
-                        <effort>Max</effort>
-                        <skip>${check.skip-findbugs}</skip>
-                        <failOnError>${check.fail-findbugs}</failOnError>
-                        <excludeFilterFile>${basedir}/build-resources/findbugs_excluded_filters.xml</excludeFilterFile>
-                        <xmlOutput>true</xmlOutput>
-                        <includeTests>true</includeTests>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>validate-findbugs</id>
-                            <phase>test-compile</phase>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-
-                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-pmd-plugin</artifactId>
                     <version>${version.pmd}</version>
@@ -1013,7 +989,7 @@
 
                         <images>
                             <image>
-                                <name>mysql:5.6.27</name>
+                                <name>mysql:5.7.34</name>
                                 <alias>killbill_mysql</alias>
                                 <run>
                                     <wait>
@@ -1159,7 +1135,7 @@
                             <schema>killbill</schema>
                         </schemas>
                         <locations>
-                            <location>db/migration</location>
+                            <location>filesystem:src/test/resources/db/migration</location>
                         </locations>
                         <outOfOrder>true</outOfOrder>
                     </configuration>
@@ -1253,11 +1229,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
             </plugin>
 
             <plugin>
