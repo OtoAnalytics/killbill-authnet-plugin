@@ -61,7 +61,7 @@
         <version.docker.plugin>0.13.4</version.docker.plugin>
         <version.flyway>6.4.0</version.flyway>
         <version.jooq>3.6.2</version.jooq>
-        <version.jackson>2.9.9</version.jackson>
+        <version.jackson>2.9.9.1</version.jackson>
         <version.lombok>1.16.4</version.lombok>
         <version.mysql-driver>5.1.36</version.mysql-driver>
         <version.pmd>3.6</version.pmd>
