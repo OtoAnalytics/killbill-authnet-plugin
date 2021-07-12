@@ -51,7 +51,7 @@
         <shade-jar-execution-id>assemble-killbill-osgi-bundles-authorize-net-gateway-java-plugin</shade-jar-execution-id>
         <!-- properties from kb oss parent pom -->
         <killbill.version>0.18.21</killbill.version>
-        <killbill-base-plugin.version>1.3.1</killbill-base-plugin.version>
+        <killbill-base-plugin.version>2.0.0</killbill-base-plugin.version>
         <killbill-platform.version>0.36.15</killbill-platform.version>
         <killbill-plugin-api.version>0.23.1</killbill-plugin-api.version>
         <killbill-api.version>0.50.2</killbill-api.version>
