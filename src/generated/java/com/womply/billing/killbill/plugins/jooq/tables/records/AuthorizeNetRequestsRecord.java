@@ -674,6 +674,81 @@ public class AuthorizeNetRequestsRecord extends UpdatableRecordImpl<AuthorizeNet
 		return this;
 	}
 
+	@Override
+	public ULong component1() {
+		return getRecordId();
+	}
+
+	@Override
+	public String component2() {
+		return getKbPaymentId();
+	}
+
+	@Override
+	public String component3() {
+		return getKbPaymentMethodId();
+	}
+
+	@Override
+	public String component4() {
+		return getKbPaymentTransactionId();
+	}
+
+	@Override
+	public String component5() {
+		return getKbTransactionType();
+	}
+
+	@Override
+	public String component6() {
+		return getTransactionType();
+	}
+
+	@Override
+	public String component7() {
+		return getAuthorizeNetCustomerProfileId();
+	}
+
+	@Override
+	public String component8() {
+		return getAuthorizeNetPaymentProfileId();
+	}
+
+	@Override
+	public BigDecimal component9() {
+		return getAmount();
+	}
+
+	@Override
+	public String component10() {
+		return getCurrency();
+	}
+
+	@Override
+	public Timestamp component11() {
+		return getCreatedAt();
+	}
+
+	@Override
+	public Timestamp component12() {
+		return getUpdatedAt();
+	}
+
+	@Override
+	public String component13() {
+		return getKbAccountId();
+	}
+
+	@Override
+	public String component14() {
+		return getKbTenantId();
+	}
+
+	@Override
+	public ULong component15() {
+		return getKbRefTransactionRecordId();
+	}
+
 	// -------------------------------------------------------------------------
 	// Constructors
 	// -------------------------------------------------------------------------

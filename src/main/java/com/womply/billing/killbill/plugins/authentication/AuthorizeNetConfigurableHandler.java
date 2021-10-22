@@ -32,8 +32,7 @@ import java.util.UUID;
  * PluginTenantConfigurableConfigurationHandler class.
  *
  */
-public class AuthorizeNetConfigurableHandler extends
-        PluginConfigurationHandler {
+public class AuthorizeNetConfigurableHandler extends PluginConfigurationHandler {
 
     public AuthorizeNetConfigurableHandler(final String pluginName,
                                            final OSGIKillbillAPI osgiKillbillAPI,

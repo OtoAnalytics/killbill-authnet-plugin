@@ -20,6 +20,14 @@
     <property name="charset" value="UTF-8"/>
     <property name="severity" value="error"/>
 
+    <!-- **************************************************** -->
+    <!-- Size Violations                                      -->
+    <!-- **************************************************** -->
+    <module name="LineLength">
+        <property name="max" value="120"/>
+        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://|throws"/>
+    </module>
+
     <module name="TreeWalker">
         <property name="fileExtensions" value="java"/>
 
@@ -87,15 +95,10 @@
             <property name="target" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF, VARIABLE_DEF"/>
         </module>
         <module name="JavadocMethod">
-            <property name="scope" value="public"/>
             <property name="allowMissingParamTags" value="true"/>
-            <property name="allowMissingThrowsTags" value="true"/>
             <property name="allowMissingReturnTag" value="true"/>
-            <property name="minLineCount" value="2"/>
             <property name="allowedAnnotations" value="Override, Test"/>
-            <property name="allowThrowsTagsForSubclasses" value="true"/>
             <property name="tokens" value="METHOD_DEF"/>
-            <property name="ignoreMethodNamesRegex" value="^main$"/>
         </module>
         <module name="JavadocParagraph"/>
         <module name="JavadocTagContinuationIndentation"/>
@@ -155,14 +158,6 @@
         <module name="ParameterName"/>
         <module name="TypeName">
             <message key="name.invalidPattern" value="Type name ''{0}'' must match pattern ''{1}''."/>
-        </module>
-
-        <!-- **************************************************** -->
-        <!-- Size Violations                                      -->
-        <!-- **************************************************** -->
-        <module name="LineLength">
-            <property name="max" value="120"/>
-            <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://|throws"/>
         </module>
 
         <!-- **************************************************** -->

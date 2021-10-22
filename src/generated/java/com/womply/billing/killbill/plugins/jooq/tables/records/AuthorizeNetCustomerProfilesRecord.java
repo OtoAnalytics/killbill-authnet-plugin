@@ -313,6 +313,36 @@ public class AuthorizeNetCustomerProfilesRecord extends UpdatableRecordImpl<Auth
 		return this;
 	}
 
+	@Override
+	public ULong component1() {
+		return getRecordId();
+	}
+
+	@Override
+	public String component2() {
+		return getCustomerId();
+	}
+
+	@Override
+	public String component3() {
+		return getCustomerProfileId();
+	}
+
+	@Override
+	public Timestamp component4() {
+		return getCreatedAt();
+	}
+
+	@Override
+	public Timestamp component5() {
+		return getUpdatedAt();
+	}
+
+	@Override
+	public String component6() {
+		return getKbTenantId();
+	}
+
 	// -------------------------------------------------------------------------
 	// Constructors
 	// -------------------------------------------------------------------------
